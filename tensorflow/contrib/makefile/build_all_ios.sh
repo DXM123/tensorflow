@@ -27,6 +27,7 @@ fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd ${SCRIPT_DIR}/../../../
 
+
 # Remove any old files first.
 make -f tensorflow/contrib/makefile/Makefile clean
 rm -rf tensorflow/contrib/makefile/downloads
@@ -34,19 +35,12 @@ rm -rf tensorflow/contrib/makefile/downloads
 # Pull down the required versions of the frameworks we need.
 tensorflow/contrib/makefile/download_dependencies.sh
 
-# Make sure the installed system version of protobuf is up to date.
-cd tensorflow/contrib/makefile/downloads/protobuf/
-./autogen.sh
-./configure
-make
-sudo make install
-cd ../../../../..
-
 # Compile protobuf for the target iOS device architectures.
 tensorflow/contrib/makefile/compile_ios_protobuf.sh
 
 # Build the iOS TensorFlow libraries.
-tensorflow/contrib/makefile/compile_ios_tensorflow.sh
+tensorflow/contrib/makefile/compile_ios_tensorflow.sh "-O3"
 
 # Creates a static universal library in 
 # tensorflow/contrib/makefile/gen/lib/libtensorflow-core.a
+

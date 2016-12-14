@@ -27,6 +27,13 @@ from tensorflow.contrib.learn.python.learn.estimators import tensor_signature
 
 class TensorSignatureTest(tf.test.TestCase):
 
+  def testTensorPlaceholderNone(self):
+    self.assertEqual(
+        None, tensor_signature.create_placeholders_from_signatures(None))
+
+  def testTensorSignatureNone(self):
+    self.assertEqual(None, tensor_signature.create_signatures(None))
+
   def testTensorSignatureCompatible(self):
     placeholder_a = tf.placeholder(name='test',
                                    shape=[None, 100],
@@ -41,6 +48,9 @@ class TensorSignatureTest(tf.test.TestCase):
                                    shape=[128, 100],
                                    dtype=tf.int32)
     signatures = tensor_signature.create_signatures(placeholder_a)
+    self.assertTrue(tensor_signature.tensors_compatible(None, None))
+    self.assertFalse(tensor_signature.tensors_compatible(None, signatures))
+    self.assertFalse(tensor_signature.tensors_compatible(placeholder_a, None))
     self.assertTrue(tensor_signature.tensors_compatible(placeholder_a,
                                                         signatures))
     self.assertTrue(tensor_signature.tensors_compatible(placeholder_b,
@@ -66,7 +76,8 @@ class TensorSignatureTest(tf.test.TestCase):
         {'a': placeholder_c}, signatures))
 
   def testSparseTensorCompatible(self):
-    t = tf.SparseTensor(indices=[[0, 0], [1, 2]], values=[1, 2], shape=[3, 4])
+    t = tf.SparseTensor(
+        indices=[[0, 0], [1, 2]], values=[1, 2], dense_shape=[3, 4])
     signatures = tensor_signature.create_signatures(t)
     self.assertTrue(tensor_signature.tensors_compatible(t, signatures))
 
@@ -96,7 +107,7 @@ class TensorSignatureTest(tf.test.TestCase):
 
   def testSparseTensorSignaturePlaceholders(self):
     tensor = tf.SparseTensor(values=[1.0, 2.0], indices=[[0, 2], [0, 3]],
-                             shape=[5, 5])
+                             dense_shape=[5, 5])
     signature = tensor_signature.create_signatures(tensor)
     placeholder = tensor_signature.create_placeholders_from_signatures(
         signature)
@@ -131,6 +142,30 @@ class TensorSignatureTest(tf.test.TestCase):
     new_signatures = tensor_signature.create_signatures(result)
     self.assertTrue(new_signatures['a'].is_compatible_with(signatures['a']))
     self.assertTrue(new_signatures['b'].is_compatible_with(signatures['b']))
+
+  def testUnknownShape(self):
+    placeholder_unk = tf.placeholder(name='unk', shape=None, dtype=tf.string)
+    placeholder_a = tf.placeholder(name='a', shape=[None], dtype=tf.string)
+    placeholder_b = tf.placeholder(name='b', shape=[128, 2], dtype=tf.string)
+    placeholder_c = tf.placeholder(name='c', shape=[128, 2], dtype=tf.int32)
+    unk_signature = tensor_signature.create_signatures(placeholder_unk)
+    # Tensors of same dtype match unk shape signature.
+    self.assertTrue(tensor_signature.tensors_compatible(placeholder_unk,
+                                                        unk_signature))
+    self.assertTrue(tensor_signature.tensors_compatible(placeholder_a,
+                                                        unk_signature))
+    self.assertTrue(tensor_signature.tensors_compatible(placeholder_b,
+                                                        unk_signature))
+    self.assertFalse(tensor_signature.tensors_compatible(placeholder_c,
+                                                         unk_signature))
+
+    string_signature = tensor_signature.create_signatures(placeholder_a)
+    int_signature = tensor_signature.create_signatures(placeholder_c)
+    # Unk shape Tensor matche signatures same dtype.
+    self.assertTrue(tensor_signature.tensors_compatible(placeholder_unk,
+                                                        string_signature))
+    self.assertFalse(tensor_signature.tensors_compatible(placeholder_unk,
+                                                         int_signature))
 
 
 if __name__ == '__main__':

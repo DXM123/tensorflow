@@ -22,6 +22,7 @@ limitations under the License.
 #include "tensorflow/stream_executor/platform/port.h"
 #include <vector>
 
+#include "cuda/cuda_config.h"
 #include "tensorflow/stream_executor/lib/status.h"
 #include "tensorflow/stream_executor/lib/statusor.h"
 #include "tensorflow/stream_executor/lib/stringpiece.h"
@@ -72,11 +73,6 @@ class DsoLoader {
   // executing program. If strip_executable_name is true, the executable file is
   // stripped off of the path.
   static string GetBinaryDirectory(bool strip_executable_name);
-
-  // Returns the location of the runfiles directory.
-  // * Manual invocation gets the runfiles as a relative path to the current
-  //   executable.
-  static string GetRunfilesDirectory();
 
   // Invokes realpath on the original path; updates candidate and returns true
   // if it succeeds (i.e. a file exists at the path); otherwise, returns false.

@@ -6,7 +6,7 @@ RNN that accepts a state saver for time-truncated RNN calculation.
 
 
 *  <b>`cell`</b>: An instance of `RNNCell`.
-*  <b>`inputs`</b>: A length T list of inputs, each a tensor of shape
+*  <b>`inputs`</b>: A length T list of inputs, each a `Tensor` of shape
     `[batch_size, input_size]`.
 *  <b>`state_saver`</b>: A state saver object with methods `state` and `save_state`.
 *  <b>`state_name`</b>: Python string or tuple of strings.  The name to use with the
@@ -16,7 +16,7 @@ RNN that accepts a state saver for time-truncated RNN calculation.
     be a single string.
 *  <b>`sequence_length`</b>: (optional) An int32/int64 vector size [batch_size].
     See the documentation for rnn() for more details about sequence_length.
-*  <b>`scope`</b>: VariableScope for the created subgraph; defaults to "RNN".
+*  <b>`scope`</b>: VariableScope for the created subgraph; defaults to "rnn".
 
 ##### Returns:
 

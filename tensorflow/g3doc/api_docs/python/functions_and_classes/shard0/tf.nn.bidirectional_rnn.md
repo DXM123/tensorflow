@@ -17,10 +17,10 @@ length(s) of the sequence(s) or completely unrolled if length(s) is not given.
 *  <b>`cell_fw`</b>: An instance of RNNCell, to be used for forward direction.
 *  <b>`cell_bw`</b>: An instance of RNNCell, to be used for backward direction.
 *  <b>`inputs`</b>: A length T list of inputs, each a tensor of shape
-    [batch_size, input_size].
+    [batch_size, input_size], or a nested tuple of such elements.
 *  <b>`initial_state_fw`</b>: (optional) An initial state for the forward RNN.
     This must be a tensor of appropriate type and shape
-    `[batch_size x cell_fw.state_size]`.
+    `[batch_size, cell_fw.state_size]`.
     If `cell_fw.state_size` is a tuple, this should be a tuple of
     tensors having shapes `[batch_size, s] for s in cell_fw.state_size`.
 *  <b>`initial_state_bw`</b>: (optional) Same as for `initial_state_fw`, but using
@@ -29,7 +29,8 @@ length(s) of the sequence(s) or completely unrolled if length(s) is not given.
     either of the initial states are not provided.
 *  <b>`sequence_length`</b>: (optional) An int32/int64 vector, size `[batch_size]`,
     containing the actual lengths for each of the sequences.
-*  <b>`scope`</b>: VariableScope for the created subgraph; defaults to "BiRNN"
+*  <b>`scope`</b>: VariableScope for the created subgraph; defaults to
+    "bidirectional_rnn"
 
 ##### Returns:
 
